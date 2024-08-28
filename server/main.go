@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,9 +19,41 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	//Todo : Upgrade he incoming GET request into a webocket connection
 
-	conn, err := upgrader.Upgrade()
+	conn, err := upgrader.Upgrade(w, r, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	defer conn.Close()
+
+	for {
+
+		messageType, message, err := conn.ReadMessage()
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Printf("Received: %s\n", message)
+
+		res := fmt.Sprintf("%s , at: %s", string(message), time.Now().String())
+
+		if err := conn.WriteMessage(messageType, []byte(res)); err != nil {
+			fmt.Println(err)
+			return
+
+		}
+	}
 
 }
 func main() {
 	http.HandleFunc("/ws", handler)
+
+	fmt.Println("starting Server On :3000")
+
+	if err := http.ListenAndServe(":3000", nil); err != nil {
+		fmt.Println(err)
+	}
 }
