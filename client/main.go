@@ -17,7 +17,7 @@ type Message struct {
 
 func main() {
 	//connect to remote websocket
-	u := url.URL{Scheme: "ws", Host: "loalhost:3000", Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: "localhost:3000", Path: "/ws"}
 
 	fmt.Printf("Connecting To %s\n ", u.String())
 
