@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
 )
 
@@ -23,10 +24,13 @@ func EnvConfig() *Env {
 		log.Fatal("Unable to load .env file: %e", err)
 	}
 
+	config := &Env{}
 
-	config:=&Env{}
+	if err := env.Parse(config); err != nil {
+		log.Fatal("Unable to load parse env file: %e", err)
 
+	}
 
-	
+	return config
 
 }
