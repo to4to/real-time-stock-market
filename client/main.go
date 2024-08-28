@@ -38,7 +38,7 @@ func main() {
 	// Go Routine Reading messages
 
 	go func() {
-
+		defer close(done)
 		for {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
@@ -56,7 +56,20 @@ func main() {
 	go func() {
 
 		for {
+			select {
 
+			case msg := <-send:
+				//write to ebsocket connection
+				err := conn.WriteMessage(msg.MessageType, msg.Data)
+				if err != nil {
+					log.Println("Write error in go-routine: ", err)
+					return
+				}
+
+			case <-done:
+				return
+
+			}
 		}
 
 	}()
