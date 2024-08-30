@@ -15,8 +15,8 @@ type Candle struct {
 
 // structure of data that comes from api
 type FinnhubMessage struct {
-	Data []TradeData
-	Type string `json:"type"` //trade
+	Data []TradeData `json:"data"`
+	Type string      `json:"type"` //trade
 }
 
 type TradeData struct {
@@ -25,4 +25,16 @@ type TradeData struct {
 	Symbol    string    `json:"s"`
 	TimeStamp int64     `json:"t"`
 	Volume    int       `json:"c"`
+}
+
+type TempCandle struct {
+	Symbol string
+
+	OpenTime   time.Time
+	CloseTime  time.Time
+	OpenPrice  float64
+	ClosePrice float64
+	HighPrice  float64
+	LowPrice   float64
+	Volume     float64
 }

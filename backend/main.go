@@ -10,6 +10,9 @@ import (
 
 var (
 	symbols = []string{"AAPL", "AMZN", "BINANCE:BTCUSDT", "IC MARKETS:1"}
+
+	//map of all ongoing candles 
+	tempCandles:=make(map[string]*TempCandle)
 )
 
 func main() {
@@ -69,6 +72,23 @@ func handleFinnhubMeaasges(ws *websocket.Conn, db *gorm.DB) {
 			fmt.Println("Error Reading the message %e", err)
 			continue
 		}
+
+		//only try to process the message data if it' a trade operation
+		if finnhubMessage.Type == "trade" {
+		for _, trade:=finnhubMessage.Data{
+
+//Process Trade Data 
+prcessTradeData(trade,db)
+
+
+		}
+		}
 	}
 
 }
+
+
+
+
+//process each trade and update or creaate temporary candles
+func prcessTradeData(trade *TradeData,db *gorm.DB){}
