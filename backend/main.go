@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gorilla/websocket"
+	"gorm.io/gorm"
 )
 
 var (
@@ -17,11 +18,11 @@ func main() {
 	db := DBConnection(env)
 
 	//Connect to finhub WebSockets
-	finnhubWSConnn := connectToFinnhub(env)
+	finnhubWSConnn := connectToFinnhub(*env)
 	defer finnhubWSConnn.Close()
 
 	//Handle Finhub incoming messages
-
+	go handleFinnhubMeaasges(finnhubWSConnn, db)
 	//Broadcast candle updates to all clients connected
 
 	///----- Endpoints
@@ -59,4 +60,15 @@ func connectToFinnhub(env Env) *websocket.Conn {
 	// }
 
 	return ws
+}
+
+func handleFinnhubMeaasges(ws *websocket.Conn, db *gorm.DB) {
+	finnhubMessage := &FinnhubMessage{}
+	for {
+		if err := ws.ReadJSON(finnhubMessage); err != nil {
+			fmt.Println("Error Reading the message %e", err)
+			continue
+		}
+	}
+
 }
