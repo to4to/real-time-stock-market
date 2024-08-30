@@ -24,7 +24,7 @@ type TradeData struct {
 	Price     []float64 `json:"p"`
 	Symbol    string    `json:"s"`
 	TimeStamp int64     `json:"t"`
-	Volume    int       `json:"c"`
+	Volume    int       `json:"v"`
 }
 
 type TempCandle struct {

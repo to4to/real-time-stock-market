@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
@@ -11,8 +13,10 @@ import (
 var (
 	symbols = []string{"AAPL", "AMZN", "BINANCE:BTCUSDT", "IC MARKETS:1"}
 
-	//map of all ongoing candles 
-	tempCandles:=make(map[string]*TempCandle)
+	//map of all ongoing candles
+	tempCandles = make(map[string]*TempCandle)
+
+	mu sync.Mutex
 )
 
 func main() {
@@ -75,20 +79,29 @@ func handleFinnhubMeaasges(ws *websocket.Conn, db *gorm.DB) {
 
 		//only try to process the message data if it' a trade operation
 		if finnhubMessage.Type == "trade" {
-		for _, trade:=finnhubMessage.Data{
+			for _, trade := range finnhubMessage.Data {
 
-//Process Trade Data 
-prcessTradeData(trade,db)
+				// Process Trade Data
+				prcessTradeData(&trade, db)
 
-
-		}
+			}
 		}
 	}
 
 }
 
+// process each trade and update or creaate temporary candles
+func prcessTradeData(trade *TradeData, db *gorm.DB) {
+	//protecting go routines from data races
 
+	mu.Lock()
+	defer mu.Unlock()
 
+	//extract trade data
 
-//process each trade and update or creaate temporary candles
-func prcessTradeData(trade *TradeData,db *gorm.DB){}
+	symbol := trade.Symbol
+	price := trade.Price
+	volume := trade.Volume
+	timestamp := time.UnixMilli(trade.TimeStamp)
+
+}
