@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 )
@@ -38,14 +39,14 @@ func main() {
 //Connecting to finnhub Websockets
 
 func connectToFinnhub(env Env) *websocket.Conn {
-	ws, _, err := websocket.DefaultDialer.Dial("wss://ws.finnhub.io?token=cr7m6s1r01qotnb3n960cr7m6s1r01qotnb3n96g", nil)
+	ws, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://ws.finnhub.io?token=%s", env.API_KEY), nil)
 	if err != nil {
 		panic(err)
 	}
 
 	for _, s := range symbols {
 		msg, _ := json.Marshal(map[string]interface{}{"type": "subscribe", "symbol": s})
-		w.WriteMessage(websocket.TextMessage, msg)
+		ws.WriteMessage(websocket.TextMessage, msg)
 	}
 
 	// var msg interface{}
