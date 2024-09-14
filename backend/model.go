@@ -27,6 +27,19 @@ type TradeData struct {
 	Volume    int       `json:"v"`
 }
 
+//Data to write to clients connected
+
+type BroadCastMessage struct {
+	UpdateType UpdateType
+}
+
+type UpdateType string
+
+const (
+	Live   UpdateType = "live"
+	Closed UpdateType = "closed"
+)
+
 type TempCandle struct {
 	Symbol string
 
@@ -37,4 +50,17 @@ type TempCandle struct {
 	HighPrice  float64
 	LowPrice   float64
 	Volume     float64
+}
+
+//converts temp candle into a candle
+
+func (tc *TempCandle) toCandle() *Candle {
+	return &Candle{
+		Symbol:    tc.Symbol,
+		Open:      tc.OpenPrice,
+		Close:     tc.ClosePrice,
+		High:      tc.HighPrice,
+		Low:       tc.LowPrice,
+		TimeStamp: tc.CloseTime,
+	}
 }

@@ -13,6 +13,10 @@ import (
 var (
 	symbols = []string{"AAPL", "AMZN", "BINANCE:BTCUSDT", "IC MARKETS:1"}
 
+
+	//broadcast message to all connected clients
+	broadcast:=make(chan *BroadCastMessage)
+
 	//map of all ongoing candles
 	tempCandles = make(map[string]*TempCandle)
 
@@ -103,5 +107,28 @@ func prcessTradeData(trade *TradeData, db *gorm.DB) {
 	price := trade.Price
 	volume := trade.Volume
 	timestamp := time.UnixMilli(trade.TimeStamp)
+
+	//Reterive or create a tempCandle for the symbol
+
+	tempCandle, exists := tempCandles[symbol]
+
+	// tempcandle does not exist or should be already closed
+
+	if !exists || timestamp.After(tempCandle.CloseTime) {
+
+		//Finilize and save the previous candle  , start a new one
+
+		if exists {
+			//convert temp candele to candle
+			candle := tempCandle.toCandle()
+
+			//Save Candle to he db
+			if err := db.Create(candle).Error; err != nil {
+				fmt.Printf("Error saving Candle to db ", err)
+			}
+
+		}
+
+	}
 
 }
