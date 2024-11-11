@@ -127,6 +127,14 @@ func prcessTradeData(trade *TradeData, db *gorm.DB) {
 				fmt.Printf("Error saving Candle to db ", err)
 			}
 
+ 
+			//broadcast the closed candle
+
+			broadcast<-&Broadcast{
+				UpdateType:Closed,
+				Candle:Candle,
+			}
+
 		}
 
 	}

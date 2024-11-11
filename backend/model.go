@@ -30,14 +30,15 @@ type TradeData struct {
 //Data to write to clients connected
 
 type BroadCastMessage struct {
-	UpdateType UpdateType
+	UpdateType UpdateType `json:"updateType"` //live | closed
+	Candle     *Candle    `json:"candle"`
 }
 
 type UpdateType string
 
 const (
-	Live   UpdateType = "live"
-	Closed UpdateType = "closed"
+	Live   UpdateType = "live"   //real time ongoing candle
+	Closed UpdateType = "closed" // past candle . already closed
 )
 
 type TempCandle struct {
